@@ -37,6 +37,7 @@ dl = Downloader("/home/hongzhuoqiao/10K_Projects/sec_filings")
 
 # Similarity Function with Preprocessing
 # doc_test_list =['  <Hello% my_World 2020! BYE    2019@!!   ', 'item.1A HELLO the WORLD 2019.']
+# docs means doc_list
 def preprocess(docs):
     sepcial_stopwords =['item','items','itemsa'] # create sepcial stopwords set
     docs = [doc.lower() for doc in docs] # lowercase
