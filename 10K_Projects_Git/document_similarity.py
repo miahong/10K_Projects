@@ -54,6 +54,7 @@ def preprocess(docs):
     docs = [doc.strip() for doc in docs]
     return docs
 
+# Calculation methods with correct and clean item1 (not include error correction)
 def similarity_calculation(ticker):
     print("\n>>> Start meausuring company {}".format(ticker))
     path_header = "/home/hongzhuoqiao/10K_Projects/sec_filings/item1_section"
@@ -74,31 +75,29 @@ def similarity_calculation(ticker):
     sim_df = pd.DataFrame(pairwise_similarity.toarray(), columns = filename_list, index = filename_list)
     sim_df.sort_index(axis=0, ascending=False, inplace=True)
     sim_df.sort_index(axis=1, ascending=False, inplace=True)
-    #sim_df.to_csv("/home/hongzhuoqiao/10K_Projects/sec_filings/tfidf_similarity/sim_matrix/"+ticker+"_matrix.csv")
-    print (">>>) Got similarity matrix for {}".format(ticker))
+    sim_df.to_csv("/home/hongzhuoqiao/10K_Projects/sec_filings/tfidf_similarity/sim_matrix/"+ticker+"_matrix.csv")
+    print (">>> Got similarity matrix for {}".format(ticker))
 
     return sim_df
 
 #similarity_calculation(ticker).to_csv('apple_sim_example.csv')
 
+# Based on sim_matrix calculated by similarity_calculation function above
+def multiple_year_average_similarity(tickername, sim_matrix_df, yrs, flag_df, correction):
+
+    if correction: 
+        for i in range(0, len(sim_matrix_df)-int(yrs)):
+            #TODO: finish the correction function here 
+            print("to be continued....")
+    else:
+        # the non-correction function here 
+        last_N_year_sim_list = []
+        for i in range(0, (len(sim_matrix_df) - yrs)):
+            avg_sim_score = np.sum(sim_matrix_df.iloc[i, i+1:i+1+yrs])/yrs
+            last_N_year_sim_list.append(avg_sim_score)
+        last_N_year_sim_df = pd.DataFrame(last_N_year_sim_list, index = sim_matrix_df.columns[:-int(yrs)],columns=[tickername])
+
+    return last_N_year_sim_df
+
+
 # %%
-# Last_3y_sim calculation from existing sim_matrix
-
-
-def last_3y_similarity(sim_df,tickername):
-    last_3y_sim_list =[]
-    for i in range(0,len(sim_df)-3):
-        last_3y_sim_list.append((np.sum(sim_df.iloc[i,i+1] + sim_df.iloc[i,i+2] + sim_df.iloc[i,i+3]))/3)
-    last_3y_sim_df = pd.DataFrame(last_3y_sim_list, index = sim_df.columns[:-3],columns=[tickername])
-    return last_3y_sim_df
-
-
-# %%
-# Last_5y_sim calculation from existing sim_matrix
-def last_5y_similarity(sim_df,tickername):
-    last_5y_sim_list =[]
-    for i in range(0,len(sim_df)-5):
-        last_5y_sim_list.append((np.sum(sim_df.iloc[i,i+1] + sim_df.iloc[i,i+2] + sim_df.iloc[i,i+3] + sim_df.iloc[i,i+4] + sim_df.iloc[i,i+5]))/5)
-    last_5y_sim_df = pd.DataFrame(last_5y_sim_list, index = sim_df.columns[:-5],columns=[tickername])
-    return last_5y_sim_df
-    
